@@ -1,3 +1,4 @@
+import logger from "@/utils/logger";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { SQSClient, SendMessageBatchCommand } from "@aws-sdk/client-sqs";
@@ -31,10 +32,14 @@ const enrichmentSchema = z.object({
 
 // Lambda handler
 export const handler: APIGatewayProxyHandler = async (event) => {
+  logger.logEventIfEnabled(event);
+
   try {
     // Parse and validate input
     const body = JSON.parse(event?.body || "");
     const { contacts, fields_to_enrich } = enrichmentSchema.parse(body);
+
+    console.log("Received request:", body);
 
     // Generate a unique request ID
     const requestId = uuidv4();

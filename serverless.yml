@@ -4,22 +4,32 @@ frameworkVersion: "3"
 
 package:
   individually: true
+  excludeDevDependencies: true
 
 plugins:
   - serverless-esbuild
   - serverless-offline
+  - serverless-plugin-datadog
+
+params:
+  default:
+    esbuildMinify: true
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
+  logRetentionInDays: 3
   versionFunctions: false
   profile: personal
-  deploymentBucket: primer-integration-pipeline-deployments
+  deploymentBucket:
+    name: primer-integration-pipeline-deployments
   httpApi:
     cors: true
   environment:
     NODE_OPTIONS: "--enable-source-maps"
+    POWERTOOLS_LOG_LEVEL: DEBUG
+    POWERTOOLS_SERVICE_NAME: primer-integration-pipeline
     QUEUE_URL: { "Ref": "BatchProcessingQueue" }
     DLQ_URL: { "Ref": "DeadLetterQueue" }
     STATUS_TABLE: { "Ref": "EnrichmentStatusTable" }
@@ -50,21 +60,22 @@ provider:
           Resource:
             - Fn::Join: ["", [Fn::GetAtt: [ResultsBucket, Arn], "/*"]]
 
-params:
-  default:
-    esbuildMinify: true
-    esbuildExclude:
-      - aws-sdk
-  local:
-    esbuildMinify: false
-    esbuildExclude: []
-
 custom:
   stages:
     - local
     - dev
     - prod
   stage: ${opt:stage, 'dev'}
+  
+  datadog:
+    apiKey: ${env:DATADOG_API_KEY}
+    site: datadoghq.com
+    enabled: true
+    enableDDLogs: true
+    enableDDTracing: true
+    addExtension: true
+    service: ${self:service}
+  
   esbuild:
     bundle: true
     minify: ${param:esbuildMinify}
@@ -73,10 +84,8 @@ custom:
     platform: node
     target: node20
     concurrency: 10
-    watch:
-      pattern:
-        - "src/**/*.ts"
-    exclude: ${param:esbuildExclude}
+    exclude:
+      - aws-sdk
 
 functions:
   createEnrichment:
@@ -112,10 +121,12 @@ resources:
               - DeadLetterQueue
               - Arn
           maxReceiveCount: 5
+
     DeadLetterQueue:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: dead-letter-queue
+
     EnrichmentStatusTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
@@ -127,8 +138,11 @@ resources:
           - AttributeName: requestId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
     ResultsBucket:
       Type: "AWS::S3::Bucket"
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
       Properties:
         BucketName: enrichment-results
         VersioningConfiguration:
