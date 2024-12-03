@@ -1,0 +1,135 @@
+service: primer-integration-pipeline
+
+frameworkVersion: "3"
+
+package:
+  individually: true
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  versionFunctions: false
+  profile: personal
+  deploymentBucket: primer-integration-pipeline-deployments
+  httpApi:
+    cors: true
+  environment:
+    NODE_OPTIONS: "--enable-source-maps"
+    QUEUE_URL: { "Ref": "BatchProcessingQueue" }
+    DLQ_URL: { "Ref": "DeadLetterQueue" }
+    STATUS_TABLE: { "Ref": "EnrichmentStatusTable" }
+    RESULTS_BUCKET: { "Ref": "ResultsBucket" }
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+          Resource:
+            - Fn::GetAtt: [EnrichmentStatusTable, Arn]
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource:
+            - Fn::GetAtt: [BatchProcessingQueue, Arn]
+            - Fn::GetAtt: [DeadLetterQueue, Arn]
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource:
+            - Fn::Join: ["", [Fn::GetAtt: [ResultsBucket, Arn], "/*"]]
+
+params:
+  default:
+    esbuildMinify: true
+    esbuildExclude:
+      - aws-sdk
+  local:
+    esbuildMinify: false
+    esbuildExclude: []
+
+custom:
+  stages:
+    - local
+    - dev
+    - prod
+  stage: ${opt:stage, 'dev'}
+  esbuild:
+    bundle: true
+    minify: ${param:esbuildMinify}
+    sourcemap: true
+    keepNames: true
+    platform: node
+    target: node20
+    concurrency: 10
+    watch:
+      pattern:
+        - "src/**/*.ts"
+    exclude: ${param:esbuildExclude}
+
+functions:
+  createEnrichment:
+    handler: src/handlers/createEnrichment.handler
+    events:
+      - httpApi:
+          path: /enrichment
+          method: post
+  getEnrichmentStatus:
+    handler: src/handlers/getEnrichmentStatus.handler
+    events:
+      - httpApi:
+          path: /enrichment/{id}
+          method: get
+  processBatch:
+    handler: src/handlers/processBatch.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - BatchProcessingQueue
+              - Arn
+
+resources:
+  Resources:
+    BatchProcessingQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: batch-processing-queue
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - DeadLetterQueue
+              - Arn
+          maxReceiveCount: 5
+    DeadLetterQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: dead-letter-queue
+    EnrichmentStatusTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: enrichment-status
+        AttributeDefinitions:
+          - AttributeName: requestId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: requestId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    ResultsBucket:
+      Type: "AWS::S3::Bucket"
+      Properties:
+        BucketName: enrichment-results
+        VersioningConfiguration:
+          Status: Enabled

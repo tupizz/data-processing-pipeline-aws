@@ -1,0 +1,5 @@
+node_modules
+.esbuild
+.serverless
+.env
+.vscode
