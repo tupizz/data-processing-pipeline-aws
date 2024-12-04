@@ -1,5 +1,5 @@
-import { SQSClient, SendMessageBatchCommand } from "@aws-sdk/client-sqs";
-import { inject, injectable } from "tsyringe";
+import { SQSClient, SendMessageBatchCommand } from '@aws-sdk/client-sqs';
+import { inject, injectable } from 'tsyringe';
 
 export interface ISQSServiceAdapter {
   sendMessages(messages: Array<{ id: string; body: object }>): Promise<void>;
@@ -9,7 +9,7 @@ export interface ISQSServiceAdapter {
 export class SQSServiceAdapter implements ISQSServiceAdapter {
   private readonly sqsClient: SQSClient;
 
-  constructor(@inject("ProcessingQueueUrl") private queueUrl: string) {
+  constructor(@inject('ProcessingQueueUrl') private queueUrl: string) {
     this.sqsClient = new SQSClient({ region: process.env.AWS_REGION });
   }
 

@@ -1,7 +1,7 @@
-import { Logger } from "@aws-lambda-powertools/logger";
+import { Logger } from '@aws-lambda-powertools/logger';
 
-import { LogFormatter, LogItem } from "@aws-lambda-powertools/logger";
-import type { LogAttributes, UnformattedAttributes } from "@aws-lambda-powertools/logger/types";
+import { LogFormatter, LogItem } from '@aws-lambda-powertools/logger';
+import type { LogAttributes, UnformattedAttributes } from '@aws-lambda-powertools/logger/types';
 
 type PrimerLog = LogAttributes;
 
@@ -31,7 +31,7 @@ class PrimerLogFormatter extends LogFormatter {
     };
 
     const logItem = new LogItem({ attributes: baseAttributes });
-    logItem.addAttributes(additionalLogAttributes); 
+    logItem.addAttributes(additionalLogAttributes);
 
     return logItem;
   }
@@ -43,8 +43,8 @@ const logger = new Logger({
   persistentLogAttributes: {
     awsAccountId: process.env.AWS_ACCOUNT_ID,
     logger: {
-      name: "@aws-lambda-powertools/logger",
-      version: "0.0.1",
+      name: '@aws-lambda-powertools/logger',
+      version: '0.0.1',
     },
   },
 });

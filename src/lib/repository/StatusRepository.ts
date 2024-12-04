@@ -4,8 +4,8 @@ import {
   PutItemCommand,
   UpdateItemCommand,
   UpdateItemCommandInput,
-} from "@aws-sdk/client-dynamodb";
-import { inject, injectable } from "tsyringe";
+} from '@aws-sdk/client-dynamodb';
+import { inject, injectable } from 'tsyringe';
 
 export interface StatusRecord {
   requestId: string;
@@ -19,11 +19,11 @@ export interface IStatusRepository {
   saveRequest(
     requestId: string,
     totalBatches: number,
-    status: "processing" | "completed" | "failed",
-    outputFileKey: string
+    status: 'processing' | 'completed' | 'failed',
+    outputFileKey: string,
   ): Promise<void>;
   getStatus(requestId: string): Promise<StatusRecord | null>;
-  updateStatus(requestId: string, status: "processing" | "completed" | "failed"): Promise<void>;
+  updateStatus(requestId: string, status: 'processing' | 'completed' | 'failed'): Promise<void>;
   incrementProcessedBatches(requestId: string): Promise<{ processedBatches: number; totalBatches: number }>;
 }
 
@@ -32,7 +32,7 @@ export class StatusRepository implements IStatusRepository {
   private readonly tableName: string;
   private readonly dynamoClient: DynamoDBClient;
 
-  constructor(@inject("StatusTableName") tableName: string) {
+  constructor(@inject('StatusTableName') tableName: string) {
     this.tableName = tableName;
     this.dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
   }
@@ -40,8 +40,8 @@ export class StatusRepository implements IStatusRepository {
   async saveRequest(
     requestId: string,
     totalBatches: number,
-    status: "processing" | "completed" | "failed",
-    outputFileKey: string
+    status: 'processing' | 'completed' | 'failed',
+    outputFileKey: string,
   ): Promise<void> {
     const params = {
       TableName: this.tableName,
@@ -50,7 +50,7 @@ export class StatusRepository implements IStatusRepository {
         status: { S: status },
         createdAt: { S: new Date().toISOString() },
         totalBatches: { N: totalBatches.toString() },
-        processedBatches: { N: "0" },
+        processedBatches: { N: '0' },
         outputFileKey: { S: outputFileKey },
       },
     };
@@ -58,16 +58,16 @@ export class StatusRepository implements IStatusRepository {
     await this.dynamoClient.send(new PutItemCommand(params));
   }
 
-  async updateStatus(requestId: string, status: "processing" | "completed" | "failed"): Promise<void> {
+  async updateStatus(requestId: string, status: 'processing' | 'completed' | 'failed'): Promise<void> {
     const params = {
       TableName: this.tableName,
       Key: { requestId: { S: requestId } },
-      UpdateExpression: "SET #st = :status",
+      UpdateExpression: 'SET #st = :status',
       ExpressionAttributeValues: {
-        ":status": { S: status },
+        ':status': { S: status },
       },
       ExpressionAttributeNames: {
-        "#st": "status"
+        '#st': 'status',
       },
     };
 
@@ -78,16 +78,16 @@ export class StatusRepository implements IStatusRepository {
     const updateParam: UpdateItemCommandInput = {
       TableName: this.tableName,
       Key: { requestId: { S: requestId } },
-      UpdateExpression: "SET processedBatches = processedBatches + :inc",
+      UpdateExpression: 'SET processedBatches = processedBatches + :inc',
       ExpressionAttributeValues: {
-        ":inc": { N: "1" },
+        ':inc': { N: '1' },
       },
-      ReturnValues: "ALL_NEW",
+      ReturnValues: 'ALL_NEW',
     };
 
     const result = await this.dynamoClient.send(new UpdateItemCommand(updateParam));
 
-    if (!result.Attributes) throw new Error("Failed to update processed batches");
+    if (!result.Attributes) throw new Error('Failed to update processed batches');
 
     return {
       processedBatches: parseInt(result.Attributes.processedBatches.N!, 10),
