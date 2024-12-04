@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import fs from 'fs';
+import path from 'path';
 
 function createJson() {
   const json = {
@@ -12,7 +13,7 @@ function createJson() {
     ],
   };
 
-  const limit = 10_000;
+  const limit = 20_000;
   for (let i = 0; i < limit; i++) {
     json.contacts.push({
       first_name: faker.person.firstName(),
@@ -26,7 +27,7 @@ function createJson() {
 
 function main() {
   const json = createJson();
-  fs.writeFileSync('contacts.json', JSON.stringify(json, null, 2));
+  fs.writeFileSync(path.join(__dirname, 'contacts.json'), JSON.stringify(json, null, 2));
 }
 
 main();

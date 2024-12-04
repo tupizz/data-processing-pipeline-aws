@@ -1,5 +1,6 @@
 import axios from 'axios';
 import fs from 'fs';
+import path from 'path';
 
 interface Contact {
   first_name: string;
@@ -15,7 +16,7 @@ interface EnrichmentRequest {
 async function createEnrichment() {
   const url = 'https://9i82rka097.execute-api.us-east-1.amazonaws.com/enrichment';
 
-  const contacts = fs.readFileSync('contacts.json', 'utf8');
+  const contacts = fs.readFileSync(path.join(__dirname, 'contacts.json'), 'utf8');
 
   const data: EnrichmentRequest = {
     contacts: JSON.parse(contacts).contacts,
