@@ -28,7 +28,7 @@ Click on the image below to watch the showcase video or here [Link](https://cln.
 
 <p align="center">
   <a href="https://cln.sh/TRQshCbV">
-    <img src="./docs/e2e_architecture.png" alt="E2E Architecture">
+    <img src="./docs/e2e_diagram.png" alt="E2E Architecture">
   </a>
 </p>
 
