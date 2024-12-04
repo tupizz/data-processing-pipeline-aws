@@ -37,15 +37,25 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       JSON.stringify({ contacts, fields_to_enrich })
     );
 
+    // Upload an empty output file to S3
+    await s3Adapter.uploadObject(
+      `${requestId}/output.json`,
+      JSON.stringify({ enriched_contacts: [] })
+    );
+
+    const BUCKET_NAME = container.resolve<string>("BucketName");
+    const downloadUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${requestId}/output.json`;
+
     // Divide contacts into batches of 100 and save the request to DynamoDB
     const batches = _.chunk(contacts, 100);
-    await statusRepository.saveRequest(requestId, batches.length, "processing");
+    await statusRepository.saveRequest(requestId, batches.length, "processing", downloadUrl);
 
     // Map batches to SQS messages and send them to the queue
     const messages = batches.map((batch, index) => ({
       id: `${requestId}-${index}`,
       body: {
         requestId,
+        outputKey: `${requestId}/output.json`,
         batch,
       },
     }));
@@ -56,11 +66,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       await sqsAdapter.sendMessages(chunk);
     }
 
-    const BUCKET_NAME = container.resolve<string>("BucketName");
     return LambdaResponse.success({
       message: "Request accepted",
       requestId,
-      downloadUrl: `https://${BUCKET_NAME}.s3.amazonaws.com/${requestId}/output.json`,
+      downloadUrl,
     });
   } catch (error) {
     logger.error("Error processing request:", { error });

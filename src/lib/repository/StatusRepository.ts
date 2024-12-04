@@ -19,7 +19,8 @@ export interface IStatusRepository {
   saveRequest(
     requestId: string,
     totalBatches: number,
-    status: "processing" | "completed" | "failed"
+    status: "processing" | "completed" | "failed",
+    outputFileKey: string
   ): Promise<void>;
   getStatus(requestId: string): Promise<StatusRecord | null>;
   updateStatus(requestId: string, status: "processing" | "completed" | "failed"): Promise<void>;
@@ -39,7 +40,8 @@ export class StatusRepository implements IStatusRepository {
   async saveRequest(
     requestId: string,
     totalBatches: number,
-    status: "processing" | "completed" | "failed"
+    status: "processing" | "completed" | "failed",
+    outputFileKey: string
   ): Promise<void> {
     const params = {
       TableName: this.tableName,
@@ -49,6 +51,7 @@ export class StatusRepository implements IStatusRepository {
         createdAt: { S: new Date().toISOString() },
         totalBatches: { N: totalBatches.toString() },
         processedBatches: { N: "0" },
+        outputFileKey: { S: outputFileKey },
       },
     };
 

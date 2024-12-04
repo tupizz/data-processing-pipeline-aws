@@ -12,7 +12,7 @@ function createJson() {
         ]
     }
 
-    let limit = 1000;
+    let limit = 10_000;
     for (let i = 0; i < limit; i++) {
         json.contacts.push({
             "first_name": faker.person.firstName(),
