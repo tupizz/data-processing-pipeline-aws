@@ -4,6 +4,10 @@
 
 This project is a serverless application built with the Serverless Framework, TypeScript, and AWS services. It provides an enrichment service that processes contact information and enriches it with additional data.
 
+## Showcase
+
+[![Watch the video](./docs/showcase.gif)](https://cln.sh/TRQshCbV)
+
 ## Datadog
 
 - Dashboard: [Link](https://p.datadoghq.com/sb/836b9d5c-b1bf-11ef-a55b-0ee733f937a2-ff8b75cf46559dca2d25a0e8de156a49?refresh_mode=sliding&from_ts=1733306292479&to_ts=1733320692479&live=true)
