@@ -25,19 +25,19 @@ G --> A
 sequenceDiagram
     participant Client
     participant API Gateway
-    participant Create Lambda
+    participant CreateHandler
     participant S3
     participant SQS
     participant DynamoDB
 
     Client->>API Gateway: POST /enrichment
-    API Gateway->>Create Lambda: Trigger
-    Create Lambda->>Create Lambda: Validate Input
-    Create Lambda->>S3: Upload input.json
-    Create Lambda->>S3: Create empty output.json
-    Create Lambda->>DynamoDB: Save request status
-    Create Lambda->>SQS: Send batched messages
-    Create Lambda->>API Gateway: Return requestId
+    API Gateway->>CreateHandler: Trigger
+    CreateHandler->>CreateHandler: Validate Input
+    CreateHandler->>S3: Upload input.json
+    CreateHandler->>S3: Create empty output.json
+    CreateHandler->>DynamoDB: Save request status
+    CreateHandler->>SQS: Send batched messages
+    CreateHandler->>API Gateway: Return requestId
     API Gateway->>Client: 200 OK + requestId
 ```
 
