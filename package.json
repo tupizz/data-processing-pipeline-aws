@@ -25,10 +25,15 @@
     "@aws-sdk/client-dynamodb": "^3.410.0",
     "@aws-sdk/client-sqs": "^3.699.0",
     "@aws-sdk/lib-dynamodb": "^3.410.0",
+    "@faker-js/faker": "^9.3.0",
     "@types/aws-lambda": "^8.10.146",
     "aws-lambda": "^1.0.7",
+    "axios": "^1.7.8",
     "lodash": "^4.17.21",
+    "reflect-metadata": "^0.2.2",
     "serverless-plugin-datadog": "^5.73.0",
+    "tsyringe": "^4.8.0",
+    "uuid": "^11.0.3",
     "zod": "^3.22.2"
   }
 }

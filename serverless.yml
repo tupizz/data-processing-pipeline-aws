@@ -11,10 +11,6 @@ plugins:
   - serverless-offline
   - serverless-plugin-datadog
 
-params:
-  default:
-    esbuildMinify: true
-
 provider:
   name: aws
   runtime: nodejs20.x
@@ -22,6 +18,10 @@ provider:
   logRetentionInDays: 3
   versionFunctions: false
   profile: personal
+  apiGateway:
+    minimumCompressionSize: 1024
+    payload:
+      maxSize: 1048576
   deploymentBucket:
     name: primer-integration-pipeline-deployments
   httpApi:
@@ -34,6 +34,7 @@ provider:
     DLQ_URL: { "Ref": "DeadLetterQueue" }
     STATUS_TABLE: { "Ref": "EnrichmentStatusTable" }
     RESULTS_BUCKET: { "Ref": "ResultsBucket" }
+
   iam:
     role:
       statements:
@@ -78,7 +79,7 @@ custom:
   
   esbuild:
     bundle: true
-    minify: ${param:esbuildMinify}
+    minify: false
     sourcemap: true
     keepNames: true
     platform: node
@@ -89,21 +90,23 @@ custom:
 
 functions:
   createEnrichment:
-    handler: src/handlers/createEnrichment.handler
+    handler: src/handlers/create/index.handler
     events:
       - httpApi:
           path: /enrichment
           method: post
   getEnrichmentStatus:
-    handler: src/handlers/getEnrichmentStatus.handler
+    handler: src/handlers/get/index.handler
     events:
       - httpApi:
           path: /enrichment/{id}
           method: get
   processBatch:
-    handler: src/handlers/processBatch.handler
+    handler: src/handlers/process/index.handler
     events:
       - sqs:
+          batchSize: 1
+          maximumConcurrency: 3
           arn:
             Fn::GetAtt:
               - BatchProcessingQueue

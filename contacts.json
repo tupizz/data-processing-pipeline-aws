@@ -1,6 +1,4 @@
-curl -X POST https://9i82rka097.execute-api.us-east-1.amazonaws.com/enrichment \
--H "Content-Type: application/json" \
--d '{
+{
   "contacts": [
     {
       "first_name": "John",
@@ -5007,6 +5005,5 @@ curl -X POST https://9i82rka097.execute-api.us-east-1.amazonaws.com/enrichment \
       "last_name": "Rath",
       "company_domain": "Wilford_Zemlak@gmail.com"
     }
-  ],
-  "fields_to_enrich": ["professional_email", "personal_phone"]
-}' | jq
+  ]
+}
