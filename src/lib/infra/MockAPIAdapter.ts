@@ -18,6 +18,8 @@ export interface IMockAPIAdapter {
   enrich(items: Contact[]): Promise<EnrichedContact[]>;
 }
 
+const DELAY = 800;
+
 @injectable()
 export class MockAPIAdapter implements IMockAPIAdapter {
   async enrich(items: Contact[]): Promise<EnrichedContact[]> {
@@ -27,7 +29,7 @@ export class MockAPIAdapter implements IMockAPIAdapter {
       personal_phone: '1234567890',
     }));
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, DELAY));
 
     return result;
   }
