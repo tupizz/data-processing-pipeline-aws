@@ -6,7 +6,15 @@ This project is a serverless application built with the Serverless Framework, Ty
 
 ## Showcase
 
-[![Watch the video](./docs/showcase.gif)](https://cln.sh/TRQshCbV)
+Click on the image below to watch the showcase video:
+
+<p align="center">
+  <a href="https://cln.sh/TRQshCbV">
+    <img src="./docs/showcase.gif" alt="Watch the video">
+  </a>
+</p>
+
+Link to the showcase video: [Link](https://cln.sh/TRQshCbV)
 
 ## Datadog
 
