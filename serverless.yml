@@ -58,6 +58,9 @@ provider:
           Action:
             - s3:PutObject
             - s3:GetObject
+            - s3:PutObjectAcl
+            - s3:GetObjectAcl
+            - s3:ListBucket
           Resource:
             - Fn::Join: ["", [Fn::GetAtt: [ResultsBucket, Arn], "/*"]]
 
