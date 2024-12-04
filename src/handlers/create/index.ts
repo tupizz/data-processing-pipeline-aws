@@ -11,7 +11,6 @@ import _ from 'lodash';
 import { container } from 'tsyringe';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
-
 import { validateEnrichmentInput } from './validate';
 
 // Lambda handler
