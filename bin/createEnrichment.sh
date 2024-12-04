@@ -1,3 +1,5 @@
+#!/bin/bash
+
 curl -X POST https://9i82rka097.execute-api.us-east-1.amazonaws.com/enrichment \
 -H "Content-Type: application/json" \
 -d '{
