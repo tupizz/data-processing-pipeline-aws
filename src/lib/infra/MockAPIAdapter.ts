@@ -18,7 +18,7 @@ export interface IMockAPIAdapter {
   enrich(items: Contact[]): Promise<EnrichedContact[]>;
 }
 
-const DELAY = 800;
+const DELAY = 500;
 
 @injectable()
 export class MockAPIAdapter implements IMockAPIAdapter {

@@ -20,8 +20,6 @@ provider:
   profile: personal
   apiGateway:
     minimumCompressionSize: 1024
-    payload:
-      maxSize: 1048576
   deploymentBucket:
     name: primer-integration-pipeline-deployments
   httpApi:
@@ -150,6 +148,6 @@ resources:
       DeletionPolicy: Retain
       UpdateReplacePolicy: Retain
       Properties:
-        BucketName: enrichment-results
+        BucketName: storage-primer
         VersioningConfiguration:
           Status: Enabled

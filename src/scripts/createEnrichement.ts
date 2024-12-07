@@ -13,8 +13,10 @@ interface EnrichmentRequest {
   fields_to_enrich: string[];
 }
 
+const BASE_URL = 'https://z1yrl80omf.execute-api.us-east-1.amazonaws.com';
+
 async function createEnrichment() {
-  const url = 'https://9i82rka097.execute-api.us-east-1.amazonaws.com/enrichment';
+  const url = `${BASE_URL}/enrichment`;
 
   const contacts = fs.readFileSync(path.join(__dirname, 'contacts.json'), 'utf8');
 

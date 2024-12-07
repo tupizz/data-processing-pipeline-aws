@@ -12,7 +12,7 @@ container.register('StatusTableName', {
   useValue: process.env.STATUS_TABLE || 'enrichment-status',
 });
 container.register('BucketName', {
-  useValue: process.env.RESULTS_BUCKET || 'enrichment-results',
+  useValue: process.env.RESULTS_BUCKET || 'storage',
 });
 container.register('ProcessingQueueUrl', {
   useValue: process.env.QUEUE_URL || 'https://sqs.us-east-1.amazonaws.com/156041436605/batch-processing-queue',
