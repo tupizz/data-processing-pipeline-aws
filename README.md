@@ -6,10 +6,10 @@ This project is a serverless application built with the Serverless Framework, Ty
 
 ## Showcase
 
-Click on the image below to watch the showcase video or here [Link](https://cln.sh/TRQshCbV)
+Click on the image below to watch the showcase video or here [Link](https://cln.sh/bhWByGSF)
 
 <p align="center">
-  <a href="https://cln.sh/TRQshCbV">
+  <a href="https://cln.sh/bhWByGSF">
     <img src="./docs/showcase.gif" alt="Watch the video">
   </a>
 </p>
@@ -27,7 +27,7 @@ Click on the image below to watch the showcase video or here [Link](https://cln.
 - [Link](https://link.excalidraw.com/readonly/L0PvBWorR4GE36O1TEoF)
 
 <p align="center">
-  <a href="https://cln.sh/TRQshCbV">
+  <a href="https://link.excalidraw.com/readonly/L0PvBWorR4GE36O1TEoF">
     <img src="./docs/e2e_diagram.png" alt="E2E Architecture">
   </a>
 </p>
