@@ -1,8 +1,9 @@
 import '@/lib/utils/di';
 
-import { IMockAPIAdapter, IS3ServiceAdapter } from '@/lib/infra';
+import { EnrichedContact, IMockAPIAdapter, IS3ServiceAdapter } from '@/lib/infra';
 import { IStatusRepository } from '@/lib/repository';
 import logger from '@/lib/utils/logger';
+import { Retryable } from '@/lib/utils/Retryable';
 import { SQSHandler } from 'aws-lambda';
 import { container } from 'tsyringe';
 
@@ -25,7 +26,19 @@ export const handler: SQSHandler = async (event) => {
         batchLength: batch.length,
       });
 
-      const enrichedContacts = await mockAPIAdapter.enrich(batch);
+      const MAX_RETRIES = 3;
+      const INITIAL_DELAY = 1000;
+      const FACTOR = 2;
+      const enrichedContacts = await Retryable.retryWithBackoff<EnrichedContact[]>(
+        () => mockAPIAdapter.enrich(batch),
+        async (attempt) => {
+          logger.info(`Retrying batch for request ${requestId} - attempt ${attempt}`);
+        },
+        MAX_RETRIES,
+        INITIAL_DELAY,
+        FACTOR,
+      );
+
       const output = await s3Adapter.getObject(outputKey);
       const outputJson = JSON.parse(output);
       outputJson.enriched_contacts = [...outputJson.enriched_contacts, ...enrichedContacts];
