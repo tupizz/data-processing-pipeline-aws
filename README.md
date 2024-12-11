@@ -41,14 +41,6 @@ output:
 
 ```json
 {
-  "status": "completed"
-}
-```
-
-output:
-
-```json
-{
   "requestId": "4b92560e-5c60-4d90-9bdd-195f39f8a91d",
   "status": "processing",
   "createdAt": "2024-12-11T16:36:13.453Z",
