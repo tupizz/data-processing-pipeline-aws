@@ -4,7 +4,7 @@
 
 This project is a serverless application built with the Serverless Framework, TypeScript, and AWS services. It provides an enrichment service that processes contact information and enriches it with additional data.
 
-## Deploying
+## Deploying & Running
 
 ```bash
 npx sls deploy --aws-profile personal
