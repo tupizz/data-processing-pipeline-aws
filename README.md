@@ -4,6 +4,16 @@
 
 This project is a serverless application built with the Serverless Framework, TypeScript, and AWS services. It provides an enrichment service that processes contact information and enriches it with additional data.
 
+## Showcase
+
+Click on the image below to watch the showcase video or here [Link](https://cln.sh/bhWByGSF)
+
+<p align="center">
+  <a href="https://cln.sh/bhWByGSF">
+    <img src="./docs/showcase.gif" alt="Watch the video">
+  </a>
+</p>
+
 ## Deploying & Running
 
 ```bash
@@ -49,16 +59,6 @@ output:
   "outputFileKey": "https://storage-primer.s3.amazonaws.com/4b92560e-5c60-4d90-9bdd-195f39f8a91d/output.json"
 }
 ```
-
-## Showcase
-
-Click on the image below to watch the showcase video or here [Link](https://cln.sh/bhWByGSF)
-
-<p align="center">
-  <a href="https://cln.sh/bhWByGSF">
-    <img src="./docs/showcase.gif" alt="Watch the video">
-  </a>
-</p>
 
 ## Datadog
 
