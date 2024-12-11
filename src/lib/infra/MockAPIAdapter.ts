@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { injectable } from 'tsyringe';
 
 export interface EnrichedContact {
@@ -25,8 +26,8 @@ export class MockAPIAdapter implements IMockAPIAdapter {
   async enrich(items: Contact[]): Promise<EnrichedContact[]> {
     const result = items.map((item) => ({
       ...item,
-      professional_email: 'test@test.com',
-      personal_phone: '1234567890',
+      professional_email: faker.internet.email(),
+      personal_phone: faker.phone.number({ style: 'international' }),
     }));
 
     await new Promise((resolve) => setTimeout(resolve, DELAY));

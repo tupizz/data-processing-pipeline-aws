@@ -19,6 +19,17 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     event: event.body?.length,
   });
 
+  // IMPROVENTS:
+  // based on the input create a signature using the SHA-256 algorithm.
+  // Why having this? To ensure we don't process the same request twice.
+  // save the signature in the request metadata.
+  // when the enrichment is done, check the signature and return the result.
+  // Why SHA-256? Because it's a secure hash (collision resistance) function that is widely used for creating digital signatures.
+  // export const getJsonHash = (obj: object): string => {
+  //   const canonicalJSON = JSON.stringify(obj, Object.keys(obj).sort());
+  //   return crypto.createHash("sha256").update(canonicalJSON, "utf8").digest("hex");
+  // };
+
   try {
     const statusRepository = container.resolve<IStatusRepository>('StatusRepository');
     const s3Adapter = container.resolve<IS3ServiceAdapter>('S3ServiceAdapter');

@@ -13,6 +13,7 @@ export interface StatusRecord {
   createdAt: string;
   totalBatches: number;
   processedBatches: number;
+  outputFileKey: string;
 }
 
 export interface IStatusRepository {
@@ -111,6 +112,7 @@ export class StatusRepository implements IStatusRepository {
       createdAt: result.Item.createdAt.S!,
       totalBatches: parseInt(result.Item.totalBatches.N!, 10),
       processedBatches: parseInt(result.Item.processedBatches.N!, 10),
+      outputFileKey: result.Item.outputFileKey.S!,
     };
   }
 }
