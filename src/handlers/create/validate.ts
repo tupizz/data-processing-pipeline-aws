@@ -6,7 +6,7 @@ export const enrichmentSchema = z.object({
       z.object({
         first_name: z.string().min(1, 'First name is required'),
         last_name: z.string().min(1, 'Last name is required'),
-        company_domain: z.string().min(1, 'Company domain is required').email(),
+        company_domain: z.string().min(1, 'Company domain is required'),
       }),
     )
     .min(1, 'At least one contact must be provided'),

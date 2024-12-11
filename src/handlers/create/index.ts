@@ -20,7 +20,12 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   });
 
   // IMPROVENTS:
-  // based on the input create a signature using the SHA-256 algorithm.
+  // 1) we could receive instead of huge JSON a file in S3, improve latency and cost.
+  //
+  // 2) When dealing with high volume of data (> 100k contacts) we should use a more efficient way to process the data.
+  // we could post the request to SQS and process it in a different lambda. And then fan-out the results to the processing lambda.
+  //
+  // 3) based on the input create a signature using the SHA-256 algorithm.
   // Why having this? To ensure we don't process the same request twice.
   // save the signature in the request metadata.
   // when the enrichment is done, check the signature and return the result.

@@ -92,18 +92,21 @@ custom:
 functions:
   createEnrichment:
     handler: src/handlers/create/index.handler
+    timeout: 29
     events:
       - httpApi:
           path: /enrichment
           method: post
   getEnrichmentStatus:
     handler: src/handlers/get/index.handler
+    timeout: 29
     events:
       - httpApi:
           path: /enrichment/{id}
           method: get
   processBatch:
     handler: src/handlers/process/index.handler
+    timeout: 900
     events:
       - sqs:
           batchSize: 1

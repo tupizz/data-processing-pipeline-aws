@@ -13,12 +13,12 @@ function createJson() {
     ],
   };
 
-  const limit = 30_000;
+  const limit = 50_000;
   for (let i = 0; i < limit; i++) {
     json.contacts.push({
       first_name: faker.person.firstName(),
       last_name: faker.person.lastName(),
-      company_domain: faker.internet.email(),
+      company_domain: faker.internet.domainName(),
     });
   }
 
