@@ -18,8 +18,6 @@ provider:
   logRetentionInDays: 3
   versionFunctions: false
   profile: personal
-  apiGateway:
-    minimumCompressionSize: 1024
   deploymentBucket:
     name: primer-integration-pipeline-deployments
   httpApi:

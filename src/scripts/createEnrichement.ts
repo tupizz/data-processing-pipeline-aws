@@ -1,3 +1,6 @@
+import 'reflect-metadata';
+
+import { S3ServiceAdapter } from '@/lib/infra';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
@@ -15,13 +18,20 @@ interface EnrichmentRequest {
 
 const BASE_URL = 'https://z1yrl80omf.execute-api.us-east-1.amazonaws.com';
 
-async function createEnrichment() {
+async function createEnrichment(file: string = 'contacts.json', pushToS3: boolean = false) {
   const url = `${BASE_URL}/enrichment`;
 
-  const contacts = fs.readFileSync(path.join(__dirname, 'contacts.json'), 'utf8');
+  const contacts = fs.readFileSync(path.join(__dirname, file), 'utf8');
+
+  let s3Url = '';
+  if (pushToS3) {
+    const s3Adapter = new S3ServiceAdapter('storage-primer');
+    await s3Adapter.uploadObject(`uploads/${file}`, contacts);
+    s3Url = `https://storage-primer.s3.amazonaws.com/uploads/${file}`;
+  }
 
   const data: EnrichmentRequest = {
-    contacts: JSON.parse(contacts).contacts,
+    contacts: pushToS3 ? s3Url : JSON.parse(contacts).contacts,
     fields_to_enrich: ['professional_email', 'personal_phone'],
   };
 
@@ -42,4 +52,4 @@ async function createEnrichment() {
   }
 }
 
-createEnrichment();
+createEnrichment(process.argv[2] as string, process.argv[3] === 'true');

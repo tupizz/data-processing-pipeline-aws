@@ -4,6 +4,60 @@
 
 This project is a serverless application built with the Serverless Framework, TypeScript, and AWS services. It provides an enrichment service that processes contact information and enriches it with additional data.
 
+## Deploying
+
+```bash
+npx sls deploy --aws-profile personal
+npx ts-node src/scripts/createJson.ts 50 # create 50k contacts
+npx ts-node src/scripts/createEnrichement.ts contacts_50k.json # create enrichment request
+npx ts-node src/scripts/createEnrichement.ts contacts_100k.json true # create enrichment request and push to S3, for large datasets
+```
+
+#### Example
+
+command:
+
+```bash
+npx ts-node src/scripts/createEnrichement.ts contacts_100k.json true
+```
+
+output:
+
+```json
+{
+  "message": "Request accepted",
+  "requestId": "4b92560e-5c60-4d90-9bdd-195f39f8a91d",
+  "downloadUrl": "https://storage-primer.s3.amazonaws.com/4b92560e-5c60-4d90-9bdd-195f39f8a91d/output.json"
+}
+```
+
+command:
+
+```bash
+./bin/getEnrichment.sh 4b92560e-5c60-4d90-9bdd-195f39f8a91d
+```
+
+output:
+
+```json
+{
+  "status": "completed"
+}
+```
+
+output:
+
+```json
+{
+  "requestId": "4b92560e-5c60-4d90-9bdd-195f39f8a91d",
+  "status": "processing",
+  "createdAt": "2024-12-11T16:36:13.453Z",
+  "totalBatches": 1001,
+  "processedBatches": 162,
+  "outputFileKey": "https://storage-primer.s3.amazonaws.com/4b92560e-5c60-4d90-9bdd-195f39f8a91d/output.json"
+}
+```
+
 ## Showcase
 
 Click on the image below to watch the showcase video or here [Link](https://cln.sh/bhWByGSF)
@@ -133,10 +187,35 @@ sequenceDiagram
 - **tsconfig.json**: TypeScript configuration file.
 - **.nvmrc**: Node version manager configuration file.
 
-## Deployment
+## Improvements
 
-To deploy the application, use the following command:
+1. **S3 Direct Upload**
 
-```
-npm run deploy
-```
+   - Instead of receiving huge JSON payloads, we could accept files directly in S3
+   - Benefits: Improved latency and reduced costs
+
+2. **High Volume Processing**
+
+   - For large datasets (>100k contacts), implement more efficient processing
+   - Solution: Use SQS for initial request and fan-out pattern for processing
+   - Architecture: Post request to SQS → Process in separate lambda → Fan-out results to processing lambda
+
+3. **Request Deduplication**
+   - Implement SHA-256 signatures for request deduplication
+   - Purpose: Prevent processing duplicate requests
+   - Implementation:
+     ```typescript
+     export const getJsonHash = (obj: object): string => {
+       const canonicalJSON = JSON.stringify(obj, Object.keys(obj).sort());
+       return crypto
+         .createHash("sha256")
+         .update(canonicalJSON, "utf8")
+         .digest("hex");
+     };
+     ```
+   - Process:
+     - Create signature from input using SHA-256
+     - Store signature in request metadata
+     - Verify signature before processing
+     - Return cached result if duplicate detected
+   - Why SHA-256? Secure hash function with strong collision resistance, widely used for digital signatures
